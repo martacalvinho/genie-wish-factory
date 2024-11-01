@@ -1,11 +1,25 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { cn } from "@/lib/utils";
+import { CoinFlip } from "@/components/CoinFlip";
+import { BetsTable } from "@/components/BetsTable";
+import { Leaderboard } from "@/components/Leaderboard";
+
+const MOCK_BETS = [
+  { id: 1, creator: "0x1234...5678", amount: 1000, choice: "heads", result: "win", prize: 1900 },
+  { id: 2, creator: "0x8765...4321", amount: 500, choice: "tails", result: "loss" },
+] as const;
+
+const MOCK_LEADERBOARD = [
+  { rank: 1, address: "0x1234567890abcdef", wins: 50, totalWinnings: 25000 },
+  { rank: 2, address: "0xabcdef1234567890", wins: 45, totalWinnings: 22000 },
+  { rank: 3, address: "0x9876543210fedcba", wins: 40, totalWinnings: 20000 },
+];
 
 const Index = () => {
   const [betAmount, setBetAmount] = useState(2000);
   const [multiplier, setMultiplier] = useState(1);
+  const [selected, setSelected] = useState<"heads" | "tails" | null>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-950 to-purple-950 p-4">
@@ -34,9 +48,7 @@ const Index = () => {
           </div>
 
           <div className="flex justify-center mb-12">
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center">
-              <div className="text-6xl">✨</div>
-            </div>
+            <CoinFlip onSelect={setSelected} selected={selected} />
           </div>
         </div>
 
@@ -57,10 +69,16 @@ const Index = () => {
           </div>
 
           <div className="flex gap-4 mb-6">
-            <Button className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-indigo-900 font-bold">
+            <Button 
+              className={`flex-1 ${selected === "heads" ? "bg-yellow-500" : "bg-yellow-400"} hover:bg-yellow-500 text-indigo-900 font-bold`}
+              onClick={() => setSelected("heads")}
+            >
               HEADS
             </Button>
-            <Button className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-indigo-900 font-bold">
+            <Button 
+              className={`flex-1 ${selected === "tails" ? "bg-yellow-500" : "bg-yellow-400"} hover:bg-yellow-500 text-indigo-900 font-bold`}
+              onClick={() => setSelected("tails")}
+            >
               TAILS
             </Button>
           </div>
@@ -86,8 +104,12 @@ const Index = () => {
           <p className="text-center text-blue-300 mt-4">Pick your choice</p>
         </div>
 
+        {/* Bets Table */}
+        <BetsTable bets={MOCK_BETS} />
+
         {/* Footer */}
         <div className="flex justify-center gap-6 mt-8">
+          <Leaderboard entries={MOCK_LEADERBOARD} />
           <Button variant="outline" className="bg-yellow-400/10 text-yellow-400 border-yellow-400/20 hover:bg-yellow-400/20">
             Buy $GENIE
           </Button>
